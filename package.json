@@ -15,8 +15,12 @@
     "eslint": "8.32.0",
     "eslint-config-next": "13.1.5",
     "next": "13.1.5",
+    "next-videos": "^1.4.1",
     "react": "18.2.0",
+    "react-audio-player": "^0.17.0",
     "react-dom": "18.2.0",
+    "react-globe.gl": "^2.22.10",
+    "request-ip": "^3.3.0",
     "typescript": "4.9.4"
   }
 }
