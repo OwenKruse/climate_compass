@@ -25,6 +25,16 @@
 .globeContainer {
   top: 0;
   left: 0;
-
 }
 
+.textContainer {
+  display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 0 2rem;
+    margin-top: 2rem;
+    top: 0;
+  align-self: flex-start;
+    position: absolute;
+}

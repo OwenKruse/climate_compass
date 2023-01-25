@@ -1,13 +1,13 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import BackgroundVideo from "../components/BackgroundVideo";
-import {forwardRef, useEffect, useState} from "react";
+import {forwardRef, useEffect, useRef, useState} from "react";
 import dynamic from "next/dynamic";
 import ReactAudioPlayer from 'react-audio-player';
 
 
 // @ts-ignore
-export default function Home({weather, city}) {
+export default function Home({weather, city, location}) {
 
     const code = weather.current.weather[0].main.toLowerCase()
     const temp = Math.round(weather.current.temp * 9/5 + 32)
@@ -15,15 +15,18 @@ export default function Home({weather, city}) {
     const [temperature, setTemperature] = useState(temp)
     const [weatherDescription, setWeatherDescription] = useState(weather.current.weather[0].description)
     const [cityName, setCity] = useState()
+    const [pointsData, setPointsData] = useState([
+        {
+            lat: location[0],
+            lng: location[1],
+        }
+    ])
 
     useEffect(() => {
         if (city.results[2] !== undefined) {
             setCity(city.results[2].formatted_address.toString())
         }
     }, [city.results])
-
-
-
 
 
     const handleClick = async (e: { lat: any; lng: any; }) => {
@@ -49,15 +52,23 @@ export default function Home({weather, city}) {
         setWeatherCode(weatherJson.current.weather[0].main.toLowerCase())
         setTemperature(Math.round(weatherJson.current.temp * 9/5 + 32))
         setWeatherDescription(weatherJson.current.weather[0].description)
+        setPointsData([
+            {
+                lat: e.lat,
+                lng: e.lng,
+            }
+        ])
+
+
     }
-
-
-
-
-  // @ts-ignore
-    // @ts-ignore
-    // @ts-ignore
-    // @ts-ignore
+    const globeEl = useRef();
+    function handleGlobeReady() {
+            const globe = globeEl.current;
+            // @ts-ignore
+            globe.controls().autoRotate = true;
+            // @ts-ignore
+            globe.controls().autoRotateSpeed = 0.35;
+    }
     return (
     <div className={styles.container}>
 
@@ -76,27 +87,35 @@ export default function Home({weather, city}) {
                 />
             <BackgroundVideo className={styles.videoBackground} code={weatherCode}>  </BackgroundVideo>
             </div>
-            <h1 className={styles.title}>
+            <div className={styles.textContainer}>
+                <h1 className={styles.title}>
+                    Climate Compass
+                </h1>
+                <p className={styles.description}>
+                    It is currently {temperature}°F and {weatherDescription} {cityName === undefined ? 'there. ' : `In ${cityName},`}
+                </p>
+            </div>
 
-                Climate Compass
-            </h1>
-            <p className={styles.description}>
-                It is currently {temperature}°F and {weatherDescription} {cityName === undefined ? 'there. ' : `In ${cityName},`}
-            </p>
-            <Globe
-                globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
-                backgroundColor="rgba(0, 0, 0, 0)"
-                waitForGlobeReady={true}
-                width={500}
-                height={500}
-                onGlobeClick={handleClick}
-            ></Globe>
+                <Globe
+                        pointsData={pointsData}
+                        globeImageUrl="/earth.jpg"
+                        backgroundColor="rgba(0, 0, 0, 0)"
+                        waitForGlobeReady={true}
+                        onGlobeReady={handleGlobeReady}
+                        animateIn={true}
+                        width={750}
+                        height={750}
+                        onGlobeClick={handleClick}
+                        ref={globeEl}
+                ></Globe>
+
         </main>
 
       <footer className={styles.footer}>
       </footer>
     </div>
   )
+
 }
 
 
@@ -142,19 +161,4 @@ const GlobeTmpl = dynamic(() => import("../components/globe"), {
 const Globe = forwardRef((props: any, ref) => (
     <GlobeTmpl {...props} forwardRef={ref} />
 ));
-
-function getVideoUrl(weatherCode: any) {
-    switch (weatherCode) {
-        case 'clear':
-            return 'https://example.com/clear.mp4';
-        case 'clouds':
-            return 'https://example.com/clouds.mp4';
-        case 'rain':
-            return 'https://example.com/rain.mp4';
-        case 'snow':
-            return 'https://example.com/snow.mp4';
-        default:
-            return 'https://example.com/default.mp4';
-    }
-}
 
